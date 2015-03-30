@@ -676,6 +676,17 @@ describe Mail::Address do
       expect(address.decoded).to eq '"まける" <mikel@test.lindsaar.net>'
     end
 
+    it "should break encoded non us-ascii on character boundary" do
+      address              = Mail::Address.new
+      address.display_name = "Mikel（ミケルミケル）Lindsaar（リンドリンド）"
+      address.address      = "mikel@test.lindsaar.net"
+      expect(address.encoded).to eq(
+        '=?UTF-8?B?TWlrZWzvvIjjg5/jgrHjg6vjg5/jgrHjg6vvvIlMaW5kc2Fhcu+8iOODquODsw==?= ' \
+        '=?UTF-8?B?44OJ44Oq44Oz44OJ77yJ?= ' \
+        '<mikel@test.lindsaar.net>'
+      )
+    end
+
   end
 
 end
