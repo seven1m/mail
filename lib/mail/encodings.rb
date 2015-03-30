@@ -196,8 +196,22 @@ module Mail
     #  #=> "=?UTF-8?B?VGhpcyBpcyDjgYIgc3RyaW5n?="
     def Encodings.b_value_encode(encoded_str, encoding = nil)
       return encoded_str if encoded_str.to_s.ascii_only?
-      string, encoding = RubyVer.b_value_encode(encoded_str, encoding)
-      map_lines(string) do |str|
+      _string, encoding = RubyVer.b_value_encode(encoded_str, encoding)
+      max_length_per_word = 68 - encoding.size # 75 - delimiters - encoding name
+      words = []
+      chars = encoded_str.chars.to_a
+      word = chars.shift
+      loop do
+        length = ((word + chars.first.to_s).bytes.to_a.size / 3).ceil * 4
+        if length > max_length_per_word || chars.empty?
+          words << RubyVer.b_value_encode(word, encoding).first.gsub(/\r|\n/, '')
+          word = chars.shift
+          break if chars.empty?
+        else
+          word << chars.shift
+        end
+      end
+      words.map do |str|
         "=?#{encoding}?B?#{str.chomp}?="
       end.join(" ")
     end
