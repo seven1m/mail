@@ -111,9 +111,9 @@ describe Mail::Encodings do
       end
     end
 
-    it "should split the string up into bite sized chunks that can be wrapped easily" do
+    it "should split the string into bite sized chunks on character boundaries that can be wrapped easily" do
       string = "This is あ really long string This is あ really long string This is あ really long string This is あ really long string This is あ really long string"
-      result = '=?UTF-8?B?VGhpcyBpcyDjgYIgcmVhbGx5IGxvbmcgc3RyaW5nIFRoaXMgaXMg44GCIHJl?= =?UTF-8?B?YWxseSBsb25nIHN0cmluZyBUaGlzIGlzIOOBgiByZWFsbHkgbG9uZyBzdHJp?= =?UTF-8?B?bmcgVGhpcyBpcyDjgYIgcmVhbGx5IGxvbmcgc3RyaW5nIFRoaXMgaXMg44GC?= =?UTF-8?B?IHJlYWxseSBsb25nIHN0cmluZw==?='
+      result = '=?UTF-8?B?VGhpcyBpcyDjgYIgcmVhbGx5IGxvbmcgc3RyaW5nIFRoaXMgaXMg44GCIHJlYWw=?= =?UTF-8?B?bHkgbG9uZyBzdHJpbmcgVGhpcyBpcyDjgYIgcmVhbGx5IGxvbmcgc3RyaW5nIFQ=?= =?UTF-8?B?aGlzIGlzIOOBgiByZWFsbHkgbG9uZyBzdHJpbmcgVGhpcyBpcyDjgYIgcmVhbGw=?= =?UTF-8?B?eSBsb25nIHN0cmluZw==?='
       if RUBY_VERSION >= "1.9.1"
         string = string.force_encoding('UTF-8')
         expect(Mail::Encodings.b_value_encode(string)).to eq(result)
