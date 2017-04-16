@@ -75,7 +75,21 @@ module Mail
 
     def Ruby19.b_value_encode(str, encoding = nil)
       encoding = str.encoding.to_s
-      [Ruby19.encode_base64(str), encoding]
+      max_length_per_word = 68 - encoding.size # 75 - delimiters - encoding name
+      words = []
+      chars = str.chars
+      word = chars.shift
+      loop do
+        length = ((word + chars.first.to_s).bytes.size / 3).ceil * 4
+        if length > max_length_per_word || chars.empty?
+          words << Ruby19.encode_base64(word).gsub(/\n/, '')
+          word = chars.shift
+          break if chars.empty?
+        else
+          word << chars.shift
+        end
+      end
+      [words.join("\n"), encoding]
     end
 
     def Ruby19.b_value_decode(str)
